@@ -25,6 +25,7 @@ COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (255, 0, 0)
 COLOR_GREEN = (0, 255, 0)
+COLOR_BLUE = (255,160,122)
 COLOR_CYAN = (0, 255, 255)
 
 FONT_SIZE = 16
@@ -77,7 +78,7 @@ def draw_maze(maze, cur_pos):
             cell = maze[y][x]
             color = COLOR_BLACK if cell == 1 else COLOR_RED if cell == 3 else COLOR_CYAN if cell == 2 else COLOR_WHITE
             if x == cur_pos[1] and y == cur_pos[2]:
-                color = COLOR_GREEN
+                color = COLOR_BLUE
             draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
     pygame.display.flip()
 
