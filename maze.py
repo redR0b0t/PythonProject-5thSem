@@ -30,33 +30,52 @@ COLOR_RED = (255, 0, 0)
 COLOR_GREEN = (0, 255, 0)
 COLOR_BLUE = (255, 160, 122)
 COLOR_CYAN = (0, 255, 255)
+COLOR_DARK_BLUE = pygame.Color("#3F46CB")
+COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
+FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE*2)
 
 BUTTONS = []
 
 SOLVE_THREAD = None
 
 r1 = r2 = 0
-
+level_select = ""
 
 def draw_rect(x, y, len, color):
     pygame.draw.rect(SCREEN, color, [x, y, len, len], 0)
 
+def draw_back_button():
+    image = pygame.image.load(".\\images\\back button.png")
+    image = pygame.transform.scale(image, (15,15))
+    SCREEN.blit(image, [5,7])
 
 def draw_button(x, y, len, height, text):
-    pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT.render(text, True, COLOR_BLACK)
-    text_len = text.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
-
-
-def draw_text(x, y, len, text):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT.render(text, True, COLOR_BLACK)
+    text_surface = FONT.render(text, True, COLOR_DARK_BLUE)
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
+
+
+def draw_heading(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
+    # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
+    text_surface = FONT_LARGE.render(text, True, color)
+    text_len = text.__len__() * FONT_SIZE
+    SCREEN.blit(text_surface, (x + (len - text_len - 10) / 2, y + 2))
+
+def draw_level_opener(x, y, len, height, text1, img, text2):
+    # pygame.draw.rect(SCREEN, COLOR_YELLOW, [x, y, len, height], 1)
+    text_surface = FONT.render(text1, True, COLOR_DARK_BLUE)
+    text_len = text1.__len__() * FONT_SIZE
+    SCREEN.blit(text_surface, (x , y + 2))
+    image = pygame.image.load(img)
+    image = pygame.transform.scale(image, (int(len-3), int(len-3)))
+    SCREEN.blit(image, [x,y+27])
+    text_surface = FONT.render(text2, True, COLOR_DARK_BLUE)
+    text_len = text1.__len__() * FONT_SIZE
+    SCREEN.blit(text_surface, (x , y + height - 30))
 
 
 def refresh():
@@ -71,38 +90,39 @@ def refresh():
 
 
 def draw_menu():
-    SCREEN.fill(COLOR_CYAN)
-    draw_text(2, 2, WIDTH - 4, 'Menu')
-    draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
-    draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
-    draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
+    SCREEN.fill(COLOR_WHITE)
+    draw_heading(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE*3)
 
-    draw_text(200, 240, WIDTH - 4, 'Jatin Yadav')
-    draw_text(200, 280, WIDTH - 4, 'Gopi kishan')
-    draw_text(200, 320, WIDTH - 4, 'Kishore H')
+    # draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
+    # draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
+    # draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
+
+    draw_level_opener(0 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 1", ".\\images\\easy.png", "Easy")
+    draw_level_opener(1 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 2", ".\\images\\medium.png", "Medium")
+    draw_level_opener(2 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 3", ".\\images\\hard.png", "Hard")
 
     # if len(BUTTONS) == 0:
     BUTTONS.append({
-        'x': 2,
-        'y': 60,
-        'length': WIDTH - 4,
-        'height': HEADER - 4,
+        'x': 0 * WIDTH/3 + 10,
+        'y': HEIGHT/2 - 75,
+        'length': WIDTH/3 - 10,
+        'height': WIDTH/3 + 50,
         'click': easy
     })
 
     BUTTONS.append({
-        'x': 2,
-        'y': 100,
-        'length': WIDTH - 4,
-        'height': HEADER - 4,
+        'x': 1 * WIDTH/3 + 10,
+        'y': HEIGHT/2 - 75,
+        'length': WIDTH/3 - 10,
+        'height': WIDTH/3 + 50,
         'click': medium
     })
 
     BUTTONS.append({
-        'x': 2,
-        'y': 140,
-        'length': WIDTH - 4,
-        'height': HEADER - 4,
+        'x': 2 * WIDTH/3 + 10,
+        'y': HEIGHT/2 - 75,
+        'length': WIDTH/3 - 10,
+        'height':  WIDTH/3 + 50,
         'click': hard
     })
 
@@ -112,35 +132,50 @@ def draw_menu():
 def easy():
     global r1
     global r2
+    global level_select
     r1 = 5
     r2 = 10
+    level_select = "LEVEL 1 : Easy"
     refresh()
 
 
 def medium():
     global r1
     global r2
+    global level_select
     r1 = 10
     r2 = 15
+    level_select = "LEVEL 2 : Medium"
     refresh()
 
 
 def hard():
     global r1
     global r2
+    global level_select
     r1 = 15
     r2 = 20
+    level_select = "LEVEL 3 : Hard"
     refresh()
 
 
 def draw_maze(maze, cur_pos, score):
+    global level_select
     SCREEN.fill(COLOR_WHITE)
-    draw_button(2, 2, WIDTH - 4, HEADER - 4, 'Toggle Level')
+    draw_back_button()
+    draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
     BUTTONS.clear()
     BUTTONS.append({
         'x': 2,
         'y': 2,
-        'length': WIDTH - 4,
+        'length': 24,
+        'height': 25,
+        'click': menu
+    })
+    BUTTONS.append({
+        'x': 30,
+        'y': 3,
+        'length': WIDTH - 150,
         'height': HEADER - 4,
         'click': refresh
     })
@@ -148,7 +183,6 @@ def draw_maze(maze, cur_pos, score):
     size = len(maze)
     cell_size = int(WIDTH / size)
     cell_padding = (WIDTH - (cell_size * size)) / 2
-    # cell_padding = -100
     for y in range(size):
         for x in range(size):
             cell = maze[y][x]
@@ -162,7 +196,7 @@ def draw_maze(maze, cur_pos, score):
                 draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
 
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
-    draw_text(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
+    draw_heading(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
     draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Menu')
     draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
 
