@@ -69,14 +69,14 @@ def refresh():
 
 def draw_menu():
     SCREEN.fill(COLOR_CYAN)
-    draw_text(2, 2, WIDTH - 4, 'Menu')
+    draw_text(2, 2, WIDTH - 4, 'Maze')
     draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
     draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
     draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
 
-    draw_text(200, 240, WIDTH - 4, 'Jatin Yadav')
-    draw_text(200, 280, WIDTH - 4, 'Gopi kishan')
-    draw_text(200, 320, WIDTH - 4, 'Kishore H')
+    # draw_text(200, 240, WIDTH - 4, 'Jatin Yadav')
+    # draw_text(200, 280, WIDTH - 4, 'Gopi kishan')
+    # draw_text(200, 320, WIDTH - 4, 'Kishore H')
 
     # if len(BUTTONS) == 0:
     BUTTONS.append({
