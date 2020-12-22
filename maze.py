@@ -5,6 +5,8 @@ import pygame
 
 from maze_generator import generate_maze
 from maze_solver import solve_maze
+from maze_solver import AI
+from maze_solver import SCORE
 from utils import stop_thread
 import random
 
@@ -12,7 +14,8 @@ pygame.init()
 
 WIDTH = 400
 HEADER = 30
-HEIGHT = WIDTH + HEADER
+BOTTOM = 60
+HEIGHT = WIDTH + HEADER + BOTTOM
 WINDOW = (WIDTH, HEIGHT)
 
 TITLE = "Python Project 5th sem"
@@ -130,7 +133,7 @@ def hard():
     refresh()
 
 
-def draw_maze(maze, cur_pos):
+def draw_maze(maze, cur_pos, score):
     SCREEN.fill(COLOR_WHITE)
     draw_button(2, 2, WIDTH - 4, HEADER - 4, 'Toggle Level')
     BUTTONS.clear()
@@ -145,13 +148,32 @@ def draw_maze(maze, cur_pos):
     size = len(maze)
     cell_size = int(WIDTH / size)
     cell_padding = (WIDTH - (cell_size * size)) / 2
+    # cell_padding = -100
     for y in range(size):
         for x in range(size):
             cell = maze[y][x]
             color = COLOR_BLACK if cell == 1 else COLOR_RED if cell == 3 else COLOR_CYAN if cell == 2 else COLOR_WHITE
             if x == cur_pos[1] and y == cur_pos[2]:
                 color = COLOR_BLUE
-            draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
+            if color == COLOR_BLACK:
+                draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size, color)
+                # draw_rect(cell_padding + x * cell_size+1, HEADER + cell_padding + y * cell_size+1, cell_size - 1, color)
+            else:
+                draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
+
+    draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
+    draw_text(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
+    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Menu')
+    draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
+
+    BUTTONS.append({
+        'x': 2,
+        'y': 60,
+        'length': WIDTH - 4,
+        'height': HEADER - 4,
+        'click': easy
+    })
+
     pygame.display.flip()
 
 

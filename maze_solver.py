@@ -1,5 +1,10 @@
 import time
 
+# from maze import AI
+
+AI = False
+SCORE = 1000
+
 
 class CellType:
     ROAD = 0
@@ -41,6 +46,9 @@ def mark_dead(maze, pos):
 
 
 def suggest_pos(cells):
+    if not AI:
+        time.sleep(50)
+
     arr = []
     for cell in cells:
         if cell:
@@ -74,13 +82,14 @@ def suggest_pos_man(cells):
 
 
 def solve_maze(maze, pos, end, callback):
+    global SCORE
     time.sleep(0.1)
     if pos[0] == end[0] and pos[1] == end[1]:
         mark_walked(maze, pos)
         return True
     t, r, d, l = neighbors(maze, pos)
-    if True:
-        if pos[0] == 0 :
+    if not AI:
+        if pos[0] == 0:
             next_pos = r
         else:
             next_pos = suggest_pos_man((t, r, d, l))
@@ -89,9 +98,11 @@ def solve_maze(maze, pos, end, callback):
     if next_pos:
         if next_pos[0] == CellType.WALKED:
             mark_dead(maze, pos)
+            SCORE -= 10
         else:
+            SCORE -= 5
             mark_walked(maze, pos)
-        callback(maze, next_pos)
+        callback(maze, next_pos,SCORE)
         return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback)
     else:
         mark_dead(maze, pos)
