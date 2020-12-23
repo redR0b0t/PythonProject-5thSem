@@ -45,7 +45,7 @@ SOLVE_THREAD = None
 r1 = r2 = 0
 level_select = ""
 
-image = pygame.image.load('mazerr.jpg')
+image = pygame.image.load('images/splash.jpg')
 SCREEN.blit(image, (-79, 6))
 pygame.display.update()
 sleep(3)
