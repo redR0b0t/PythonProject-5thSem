@@ -183,6 +183,7 @@ def draw_maze(maze, cur_pos, score):
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
+    draw_button(380, 3, 20, HEADER - 4, "Replay")
     BUTTONS.clear()
     BUTTONS.append({
         'x': 2,
@@ -192,9 +193,9 @@ def draw_maze(maze, cur_pos, score):
         'click': menu
     })
     BUTTONS.append({
-        'x': 30,
+        'x': 340,
         'y': 3,
-        'length': WIDTH - 150,
+        'length': 60,
         'height': HEADER - 4,
         'click': refresh
     })
