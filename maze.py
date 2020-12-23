@@ -36,7 +36,7 @@ COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
-FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 2)
+FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 3)
 
 BUTTONS = []
 
@@ -48,7 +48,7 @@ level_select = ""
 image = pygame.image.load('images/splash.jpg')
 SCREEN.blit(image, (-79, 6))
 pygame.display.update()
-sleep(3)
+sleep(1)
 pygame.mixer.init()
 pygame.mixer.music.load('2.mp3')
 pygame.mixer.music.play()
@@ -75,7 +75,7 @@ def draw_heading(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
     text_surface = FONT_LARGE.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x + (len - text_len - 10) / 2, y + 2))
+    SCREEN.blit(text_surface, (x + (len - text_len - 60) / 2, y + 5))
 
 def draw_level_opener(x, y, len, height, text1, img, text2):
     # pygame.draw.rect(SCREEN, COLOR_YELLOW, [x, y, len, height], 1)
@@ -176,6 +176,7 @@ def draw_maze(maze, cur_pos, score):
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
+    draw_heading
     BUTTONS.clear()
     BUTTONS.append({
         'x': 2,
