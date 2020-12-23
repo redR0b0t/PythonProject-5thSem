@@ -2,6 +2,7 @@
 import threading
 
 import pygame
+from time import sleep 
 
 from maze_generator import generate_maze
 from maze_solver import solve_maze
@@ -9,6 +10,7 @@ from utils import stop_thread
 import random
 
 pygame.init()
+
 
 WIDTH = 400
 HEADER = 30
@@ -36,7 +38,13 @@ BUTTONS = []
 SOLVE_THREAD = None
 
 r1 = r2 = 0
-
+image = pygame.image.load('mazerr.jpg')
+SCREEN.blit(image, (-79,6))
+pygame.display.update()
+sleep(3)
+pygame.mixer.init()
+pygame.mixer.music.load('2.mp3')
+pygame.mixer.music.play()
 
 def draw_rect(x, y, len, color):
     pygame.draw.rect(SCREEN, color, [x, y, len, len], 0)
@@ -74,9 +82,6 @@ def draw_menu():
     draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
     draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
 
-    draw_text(200, 240, WIDTH - 4, 'Jatin Yadav')
-    draw_text(200, 280, WIDTH - 4, 'Gopi kishan')
-    draw_text(200, 320, WIDTH - 4, 'Kishore H')
 
     # if len(BUTTONS) == 0:
     BUTTONS.append({
