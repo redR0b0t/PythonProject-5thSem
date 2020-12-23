@@ -1,7 +1,10 @@
 # coding = utf-8
+import sys
+import os
 import threading
 
 import pygame
+from time import sleep
 
 from maze_generator import generate_maze
 from maze_solver import solve_maze
@@ -35,7 +38,7 @@ COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
-FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE*2)
+FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 2)
 
 BUTTONS = []
 
@@ -44,13 +47,24 @@ SOLVE_THREAD = None
 r1 = r2 = 0
 level_select = ""
 
+image = pygame.image.load('.\\ext\\mazerr.jpg')
+SCREEN.blit(image, (-79, 6))
+pygame.display.update()
+sleep(3)
+pygame.mixer.init()
+pygame.mixer.music.load('.\\ext\\2.mp3')
+pygame.mixer.music.play()
+
+
 def draw_rect(x, y, len, color):
     pygame.draw.rect(SCREEN, color, [x, y, len, len], 0)
 
+
 def draw_back_button():
-    image = pygame.image.load(".\\images\\back button.png")
-    image = pygame.transform.scale(image, (15,15))
-    SCREEN.blit(image, [5,7])
+    image = pygame.image.load(".\\ext\\images\\back button.png")
+    image = pygame.transform.scale(image, (15, 15))
+    SCREEN.blit(image, [5, 7])
+
 
 def draw_button(x, y, len, height, text):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
@@ -59,23 +73,24 @@ def draw_button(x, y, len, height, text):
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
 
 
-def draw_heading(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
+def draw_heading(x, y, len, text, color=COLOR_BLACK, font_size=FONT_SIZE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
     text_surface = FONT_LARGE.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len - 10) / 2, y + 2))
 
+
 def draw_level_opener(x, y, len, height, text1, img, text2):
     # pygame.draw.rect(SCREEN, COLOR_YELLOW, [x, y, len, height], 1)
     text_surface = FONT.render(text1, True, COLOR_DARK_BLUE)
     text_len = text1.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x , y + 2))
+    SCREEN.blit(text_surface, (x, y + 2))
     image = pygame.image.load(img)
-    image = pygame.transform.scale(image, (int(len-3), int(len-3)))
-    SCREEN.blit(image, [x,y+27])
+    image = pygame.transform.scale(image, (int(len - 3), int(len - 3)))
+    SCREEN.blit(image, [x, y + 27])
     text_surface = FONT.render(text2, True, COLOR_DARK_BLUE)
     text_len = text1.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x , y + height - 30))
+    SCREEN.blit(text_surface, (x, y + height - 30))
 
 
 def refresh():
@@ -91,38 +106,41 @@ def refresh():
 
 def draw_menu():
     SCREEN.fill(COLOR_WHITE)
-    draw_heading(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE*3)
+    draw_heading(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE * 3)
 
     # draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
     # draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
     # draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
 
-    draw_level_opener(0 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 1", ".\\images\\easy.png", "Easy")
-    draw_level_opener(1 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 2", ".\\images\\medium.png", "Medium")
-    draw_level_opener(2 * WIDTH/3 + 10, HEIGHT/2 - 75, WIDTH/3 - 10, WIDTH/3 + 50, "LEVEL 3", ".\\images\\hard.png", "Hard")
+    draw_level_opener(0 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 1",
+                      ".\\ext\\images\\easy.png", "Easy")
+    draw_level_opener(1 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 2",
+                      ".\\ext\\images\\medium.png", "Medium")
+    draw_level_opener(2 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 3",
+                      ".\\ext\\images\\hard.png", "Hard")
 
     # if len(BUTTONS) == 0:
     BUTTONS.append({
-        'x': 0 * WIDTH/3 + 10,
-        'y': HEIGHT/2 - 75,
-        'length': WIDTH/3 - 10,
-        'height': WIDTH/3 + 50,
+        'x': 0 * WIDTH / 3 + 10,
+        'y': HEIGHT / 2 - 75,
+        'length': WIDTH / 3 - 10,
+        'height': WIDTH / 3 + 50,
         'click': easy
     })
 
     BUTTONS.append({
-        'x': 1 * WIDTH/3 + 10,
-        'y': HEIGHT/2 - 75,
-        'length': WIDTH/3 - 10,
-        'height': WIDTH/3 + 50,
+        'x': 1 * WIDTH / 3 + 10,
+        'y': HEIGHT / 2 - 75,
+        'length': WIDTH / 3 - 10,
+        'height': WIDTH / 3 + 50,
         'click': medium
     })
 
     BUTTONS.append({
-        'x': 2 * WIDTH/3 + 10,
-        'y': HEIGHT/2 - 75,
-        'length': WIDTH/3 - 10,
-        'height':  WIDTH/3 + 50,
+        'x': 2 * WIDTH / 3 + 10,
+        'y': HEIGHT / 2 - 75,
+        'length': WIDTH / 3 - 10,
+        'height': WIDTH / 3 + 50,
         'click': hard
     })
 
