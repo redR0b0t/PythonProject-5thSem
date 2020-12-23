@@ -153,7 +153,7 @@ def easy():
     global r2
     global level_select
     r1 = 5
-    r2 = 10
+    r2 = 7
     level_select = "LEVEL 1 : Easy"
     refresh()
 
@@ -163,7 +163,7 @@ def medium():
     global r2
     global level_select
     r1 = 10
-    r2 = 15
+    r2 = 12
     level_select = "LEVEL 2 : Medium"
     refresh()
 
@@ -173,7 +173,7 @@ def hard():
     global r2
     global level_select
     r1 = 15
-    r2 = 20
+    r2 = 17
     level_select = "LEVEL 3 : Hard"
     refresh()
 
