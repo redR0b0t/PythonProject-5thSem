@@ -38,6 +38,7 @@ BUTTONS = []
 SOLVE_THREAD = None
 
 r1 = r2 = 0
+
 image = pygame.image.load('mazerr.jpg')
 SCREEN.blit(image, (-79,6))
 pygame.display.update()
