@@ -46,9 +46,9 @@ r1 = r2 = 0
 level_select = ""
 
 image = pygame.image.load('images/splash.jpg')
-SCREEN.blit(image, (-79, 6))
+SCREEN.blit(image, (-79, 35))
 pygame.display.update()
-sleep(1)
+sleep(3)
 pygame.mixer.init()
 pygame.mixer.music.load('2.mp3')
 pygame.mixer.music.play()
