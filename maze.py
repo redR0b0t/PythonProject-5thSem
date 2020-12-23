@@ -2,6 +2,7 @@
 import threading
 
 import pygame
+from time import sleep
 
 from maze_generator import generate_maze
 from maze_solver import solve_maze
@@ -35,7 +36,7 @@ COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
-FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE*2)
+FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 2)
 
 BUTTONS = []
 
@@ -44,13 +45,24 @@ SOLVE_THREAD = None
 r1 = r2 = 0
 level_select = ""
 
+image = pygame.image.load('mazerr.jpg')
+SCREEN.blit(image, (-79, 6))
+pygame.display.update()
+sleep(3)
+pygame.mixer.init()
+pygame.mixer.music.load('2.mp3')
+pygame.mixer.music.play()
+
+
 def draw_rect(x, y, len, color):
     pygame.draw.rect(SCREEN, color, [x, y, len, len], 0)
 
+
 def draw_back_button():
     image = pygame.image.load(".\\images\\back button.png")
-    image = pygame.transform.scale(image, (15,15))
-    SCREEN.blit(image, [5,7])
+    image = pygame.transform.scale(image, (15, 15))
+    SCREEN.blit(image, [5, 7])
+
 
 def draw_button(x, y, len, height, text):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
