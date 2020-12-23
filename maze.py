@@ -36,7 +36,8 @@ COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
-FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 3)
+FONT_LARGE1 = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 3)
+FONT_LARGE2 = pygame.font.Font("ext/fonts/msyh.ttf", int(FONT_SIZE * 1.5))
 
 BUTTONS = []
 
@@ -71,11 +72,17 @@ def draw_button(x, y, len, height, text):
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
 
 
-def draw_heading(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
+def draw_heading1(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT_LARGE.render(text, True, color)
+    text_surface = FONT_LARGE1.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len - 60) / 2, y + 5))
+
+def draw_heading2(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE*2):
+    # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
+    text_surface = FONT_LARGE2.render(text, True, color)
+    text_len = text.__len__() * FONT_SIZE
+    SCREEN.blit(text_surface, (x, y))
 
 def draw_level_opener(x, y, len, height, text1, img, text2):
     # pygame.draw.rect(SCREEN, COLOR_YELLOW, [x, y, len, height], 1)
@@ -103,7 +110,7 @@ def refresh():
 
 def draw_menu():
     SCREEN.fill(COLOR_WHITE)
-    draw_heading(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE*3)
+    draw_heading1(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE*3)
 
     # draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
     # draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
@@ -176,7 +183,6 @@ def draw_maze(maze, cur_pos, score):
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
-    draw_heading
     BUTTONS.clear()
     BUTTONS.append({
         'x': 2,
@@ -209,7 +215,7 @@ def draw_maze(maze, cur_pos, score):
                 draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
 
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
-    draw_heading(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
+    draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
     draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Menu')
     draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
 
