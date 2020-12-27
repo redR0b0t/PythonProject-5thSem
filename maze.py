@@ -82,7 +82,7 @@ def draw_heading2(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE*2)
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
     text_surface = FONT_LARGE2.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x, y))
+    SCREEN.blit(text_surface, (x + (len - text_len-30) / 2, y))
 
 def draw_level_opener(x, y, len, height, text1, img, text2):
     # pygame.draw.rect(SCREEN, COLOR_YELLOW, [x, y, len, height], 1)
