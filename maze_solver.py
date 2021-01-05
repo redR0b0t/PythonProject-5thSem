@@ -1,10 +1,11 @@
 import time
+import pygame
 
 # from maze import AI
 
 AI = False
 SCORE = 1000
-
+STATUS = ''
 
 class CellType:
     ROAD = 0
@@ -81,11 +82,14 @@ def suggest_pos_man(cells):
                 return cells[3]
 
 
-def solve_maze(maze, pos, end, callback):
+
+def solve_maze(maze, pos, end, callback, end_screen):
     global SCORE
     time.sleep(0.1)
     if pos[0] == end[0] and pos[1] == end[1]:
         mark_walked(maze, pos)
+        end_screen("complete", SCORE)
+        SCORE = 1000
         return True
     t, r, d, l = neighbors(maze, pos)
     if not AI:
@@ -102,8 +106,13 @@ def solve_maze(maze, pos, end, callback):
         else:
             SCORE -= 1
             mark_walked(maze, pos)
+        if SCORE <= 0:
+            end_screen('score_0', SCORE)
+            SCORE = 1000
+            
+            return True
         callback(maze, next_pos,SCORE)
-        return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback)
+        return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback, end_screen)
     else:
         mark_dead(maze, pos)
         callback(maze, next_pos)

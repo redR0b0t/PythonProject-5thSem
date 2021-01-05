@@ -8,6 +8,7 @@ from maze_generator import generate_maze
 from maze_solver import solve_maze
 from maze_solver import AI
 from maze_solver import SCORE
+from maze_solver import STATUS
 from utils import stop_thread
 import random
 
@@ -28,7 +29,9 @@ CLOCK = pygame.time.Clock()
 COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (255, 0, 0)
+COLOR_DARK_RED = (82,0,0)
 COLOR_GREEN = (0, 255, 0)
+COLOR_DARK_GREEN = (2,100,64)
 COLOR_BLUE = (255, 160, 122)
 COLOR_CYAN = (0, 255, 255)
 COLOR_DARK_BLUE = pygame.Color("#3F46CB")
@@ -49,7 +52,7 @@ level_select = ""
 image = pygame.image.load('images/splash.jpg')
 SCREEN.blit(image, (-79, 35))
 pygame.display.update()
-sleep(3)
+sleep(1)
 pygame.mixer.init()
 pygame.mixer.music.load('2.mp3')
 pygame.mixer.music.play()
@@ -65,9 +68,9 @@ def draw_back_button():
     SCREEN.blit(image, [5, 7])
 
 
-def draw_button(x, y, len, height, text):
+def draw_button(x, y, len, height, text, color=COLOR_DARK_BLUE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT.render(text, True, COLOR_DARK_BLUE)
+    text_surface = FONT.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
 
@@ -78,10 +81,10 @@ def draw_heading1(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len - 60) / 2, y + 5))
 
-def draw_heading2(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE*2):
+def draw_heading2(x, y, len, text, color = COLOR_BLACK, font_size = FONT_SIZE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
     text_surface = FONT_LARGE2.render(text, True, color)
-    text_len = text.__len__() * FONT_SIZE
+    text_len = text.__len__() * font_size
     SCREEN.blit(text_surface, (x + (len - text_len-30) / 2, y))
 
 def draw_level_opener(x, y, len, height, text1, img, text2):
@@ -96,6 +99,28 @@ def draw_level_opener(x, y, len, height, text1, img, text2):
     text_len = text1.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x , y + height - 30))
 
+def draw_end_screen(status, score):
+    # print(SCORE)
+    # SCORE = score
+    # print(SCORE)
+    # print(status, score)
+    if status == 'complete' :
+        SCREEN.fill(COLOR_GREEN)
+        draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
+        draw_heading2(150, 225, 200, "Congratulations", COLOR_DARK_GREEN)
+        draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_GREEN)
+        draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
+        draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
+        pygame.display.update()
+    elif status == 'score_0':
+        SCREEN.fill(COLOR_RED)
+        draw_heading1(85, 150, 200, "You Lost", COLOR_DARK_RED)
+        draw_heading2(150, 225, 200, "Better Luck Next Time", COLOR_DARK_RED)
+        draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_RED)
+        draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_RED)
+        draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_RED)
+        pygame.display.update()
+
 
 def refresh():
     global MAZE, ENTRANCE, EXIT, SOLVE_THREAD
@@ -104,7 +129,7 @@ def refresh():
         SOLVE_THREAD = None
     size = random_maze_size()
     MAZE, ENTRANCE, EXIT = generate_maze(size, size)
-    SOLVE_THREAD = threading.Thread(target=solve_maze, args=(MAZE, ENTRANCE, EXIT, draw_maze))
+    SOLVE_THREAD = threading.Thread(target=solve_maze, args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen))
     SOLVE_THREAD.start()
 
 
@@ -188,7 +213,7 @@ def draw_maze(maze, cur_pos, score):
     BUTTONS.append({
         'x': 2,
         'y': 2,
-        'length': 24,
+        'length': 40,
         'height': 25,
         'click': menu
     })
