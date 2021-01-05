@@ -8,7 +8,6 @@ from maze_generator import generate_maze
 from maze_solver import solve_maze
 from maze_solver import AI
 from maze_solver import SCORE
-from maze_solver import STATUS
 from utils import stop_thread
 import random
 
@@ -129,7 +128,7 @@ def refresh():
         SOLVE_THREAD = None
     size = random_maze_size()
     MAZE, ENTRANCE, EXIT = generate_maze(size, size)
-    SOLVE_THREAD = threading.Thread(target=solve_maze, args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen))
+    SOLVE_THREAD = threading.Thread(target=solve_maze, args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time))
     SOLVE_THREAD.start()
 
 
@@ -202,6 +201,23 @@ def hard():
     level_select = "LEVEL 3 : Hard"
     refresh()
 
+def msec_to_time(msec):
+    print("***", msec, "***")
+    sec = msec//1000
+    min,sec = divmod(sec, 60)
+    min_str = ''
+    sec_str = ''
+    if min == 0 : min_str = '00'
+    elif min > 0 and min < 10 : min_str = '0'+str(min)
+    else : min_str = str(min)
+    if sec == 0 : sec_str = '00'
+    elif sec > 0 and sec < 10 : sec_str = '0'+str(sec)
+    else : sec_str = str(sec)
+    print("                      ", min_str + ':' + sec_str, "***")
+    return min_str + ':' + sec_str
+
+def display_time(curr_time=0):
+    draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
 
 def draw_maze(maze, cur_pos, score):
     global level_select
@@ -242,7 +258,8 @@ def draw_maze(maze, cur_pos, score):
 
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
     draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
-    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Menu')
+    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Time')
+    # draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3, "00:00")
     draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
 
     BUTTONS.append({
