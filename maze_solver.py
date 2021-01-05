@@ -98,9 +98,9 @@ def solve_maze(maze, pos, end, callback):
     if next_pos:
         if next_pos[0] == CellType.WALKED:
             mark_dead(maze, pos)
-            SCORE -= 10
-        else:
             SCORE -= 5
+        else:
+            SCORE -= 1
             mark_walked(maze, pos)
         callback(maze, next_pos,SCORE)
         return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback)
