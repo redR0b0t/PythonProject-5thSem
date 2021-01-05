@@ -217,7 +217,10 @@ def msec_to_time(msec):
     return min_str + ':' + sec_str
 
 def display_time(curr_time=0):
+    draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3,"")
+    pygame.display.update()
     draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
+    pygame.display.update()
 
 def draw_maze(maze, cur_pos, score):
     global level_select
