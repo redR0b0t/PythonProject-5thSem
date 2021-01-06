@@ -100,10 +100,6 @@ def draw_level_opener(x, y, len, height, text1, img, text2):
     SCREEN.blit(text_surface, (x , y + height - 30))
 
 def draw_end_screen(status, score):
-    # print(SCORE)
-    # SCORE = score
-    # print(SCORE)
-    # print(status, score)
     if status == 'complete' :
         SCREEN.fill(COLOR_GREEN)
         draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
@@ -112,6 +108,21 @@ def draw_end_screen(status, score):
         draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
         draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
         pygame.display.update()
+
+        # High Score update
+        f = open("high_score.txt", "r")
+        lines = f.read().splitlines()
+        if r1 == 5 and score > int(lines[0]) :
+            lines[0] = str(score)
+        if r1 == 10 and score > int(lines[1]) :
+            lines[1] = str(score)
+        if r1 == 15 and score > int(lines[2]) :
+            lines[2] = str(score)
+        f.close()
+        f = open("high_score.txt", "w")
+        f.write(lines[0]+'\n'+lines[1]+'\n'+lines[2])
+        f.close()
+
     elif status == 'score_0':
         SCREEN.fill(COLOR_RED)
         draw_heading1(85, 150, 200, "You Lost", COLOR_DARK_RED)
@@ -134,6 +145,15 @@ def refresh():
 
 
 def draw_menu():
+
+    # check for high score file
+
+    f = open("high_score.txt", "r+")
+    lines = f.read().splitlines()
+    if len(lines) == 0 :
+        f.write("0\n0\n0")
+    f.close()
+
     SCREEN.fill(COLOR_WHITE)
     draw_heading1(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE*3)
 
@@ -202,12 +222,24 @@ def hard():
     level_select = "LEVEL 3 : Hard"
     refresh()
 
+def display_high_score():
+    global r1
+    f = open("high_score.txt", "r")
+    lines = f.read().splitlines()
+    if r1 == 5 : # Easy
+        return lines[0]
+    elif r1 == 10 : # Medium
+        return lines[1]
+    elif r1 == 15 : # Hard
+        return lines[2]
+    f.close()
 
 def draw_maze(maze, cur_pos, score):
     global level_select
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
+    draw_button(200, 3, WIDTH - 150, HEADER - 4, "High Score : " + display_high_score())
     draw_button(380, 3, 20, HEADER - 4, "Replay")
     BUTTONS.clear()
     BUTTONS.append({
