@@ -101,6 +101,8 @@ def solve_maze(maze, pos, end, callback, end_screen, display_time, AI):
     global SCORE, TIME_THREAD, TIME
     time.sleep(0.1)
 
+    if AI : SCORE = 1000
+    
     if pos[0] == 0 and pos[1] == 1:
         SCORE = 1000
         TIME = 0

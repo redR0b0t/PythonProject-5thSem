@@ -113,7 +113,7 @@ def draw_level_opener(x, y, len, height, text1, img, text2):
 
 
 def draw_end_screen(status, score):
-    global SOLVE_THREAD,TIME_THREAD
+    global SOLVE_THREAD,TIME_THREAD, AI
     # print(SCORE)
     # SCORE = score
     # print(SCORE)
@@ -127,6 +127,7 @@ def draw_end_screen(status, score):
         TIME_THREAD = None
     if status == 'complete':
         if AI :
+            AI = False
             SCREEN.fill(COLOR_ORANGE)
             draw_heading1(80, 150, 200, "You Used AI", COLOR_DARK_ORANGE)
             draw_heading2(155, 225, 200, "To Complete the Level", COLOR_DARK_ORANGE)
@@ -303,6 +304,7 @@ def display_time(curr_time,score):
     # pygame.display.flip()
     # draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
     # pygame.draw.rect(SCREEN, COLOR_WHITE, [2+WIDTH//3,HEIGHT-BOTTOM , WIDTH//3, BOTTOM-4], 1)
+    if AI : Score = 1000
     SCREEN.fill(COLOR_WHITE, (2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4))
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
     draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
