@@ -175,7 +175,7 @@ def refresh():
 def draw_menu():
     # check for high score file
 
-    f = open("high_score.txt", "r+")
+    f = open("data/high_score.txt", "r+")
     lines = f.read().splitlines()
     if len(lines) == 0:
         f.write("0\n0\n0")
@@ -255,7 +255,7 @@ def hard():
 
 def display_high_score():
     global r1
-    f = open("high_score.txt", "r")
+    f = open("data/high_score.txt", "r")
     lines = f.read().splitlines()
     if r1 == 5:  # Easy
         return lines[0]
