@@ -30,15 +30,18 @@ CLOCK = pygame.time.Clock()
 COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (255, 0, 0)
+COLOR_DARK_RED = (82, 0, 0)
 COLOR_GREEN = (0, 255, 0)
+COLOR_DARK_GREEN = (2, 100, 64)
 COLOR_BLUE = (255, 160, 122)
 COLOR_CYAN = (0, 255, 255)
 COLOR_DARK_BLUE = pygame.Color("#3F46CB")
 COLOR_YELLOW = pygame.Color("#F1CA3A")
 
 FONT_SIZE = 16
-FONT = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE)
-FONT_LARGE = pygame.font.Font("ext/fonts/msyh.ttf", FONT_SIZE * 2)
+FONT = pygame.font.Font("data/fonts/msyh.ttf", FONT_SIZE)
+FONT_LARGE1 = pygame.font.Font("data/fonts/msyh.ttf", FONT_SIZE * 3)
+FONT_LARGE2 = pygame.font.Font("data/fonts/msyh.ttf", int(FONT_SIZE * 1.5))
 
 BUTTONS = []
 
@@ -47,12 +50,14 @@ SOLVE_THREAD = None
 r1 = r2 = 0
 level_select = ""
 
-image = pygame.image.load('.\\ext\\mazerr.jpg')
-SCREEN.blit(image, (-79, 6))
+# image = pygame.image.load('.\\data\\mazerr.jpg')
+# SCREEN.blit(image, (-79, 6))
+image = pygame.image.load('data/images/splash.jpg')
+SCREEN.blit(image, (-79, 35))
 pygame.display.update()
-sleep(3)
+sleep(1)
 pygame.mixer.init()
-pygame.mixer.music.load('.\\ext\\2.mp3')
+pygame.mixer.music.load('.\\data\\2.mp3')
 pygame.mixer.music.play()
 
 
@@ -61,23 +66,30 @@ def draw_rect(x, y, len, color):
 
 
 def draw_back_button():
-    image = pygame.image.load(".\\ext\\images\\back button.png")
+    image = pygame.image.load(".\\data\\images\\back button.png")
     image = pygame.transform.scale(image, (15, 15))
     SCREEN.blit(image, [5, 7])
 
 
-def draw_button(x, y, len, height, text):
+def draw_button(x, y, len, height, tdata, color=COLOR_DARK_BLUE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT.render(text, True, COLOR_DARK_BLUE)
+    text_surface = FONT.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
 
 
-def draw_heading(x, y, len, text, color=COLOR_BLACK, font_size=FONT_SIZE):
+def draw_heading1(x, y, len, text, color=COLOR_BLACK, font_size=FONT_SIZE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT_LARGE.render(text, True, color)
+    text_surface = FONT_LARGE1.render(text, True, color)
     text_len = text.__len__() * FONT_SIZE
-    SCREEN.blit(text_surface, (x + (len - text_len - 10) / 2, y + 2))
+    SCREEN.blit(text_surface, (x + (len - text_len - 60) / 2, y + 5))
+
+
+def draw_heading2(x, y, len, text, color=COLOR_BLACK, font_size=FONT_SIZE):
+    # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
+    text_surface = FONT_LARGE2.render(text, True, color)
+    text_len = text.__len__() * font_size
+    SCREEN.blit(text_surface, (x + (len - text_len - 30) / 2, y))
 
 
 def draw_level_opener(x, y, len, height, text1, img, text2):
@@ -93,6 +105,29 @@ def draw_level_opener(x, y, len, height, text1, img, text2):
     SCREEN.blit(text_surface, (x, y + height - 30))
 
 
+def draw_end_screen(status, score):
+    # print(SCORE)
+    # SCORE = score
+    # print(SCORE)
+    # print(status, score)
+    if status == 'complete':
+        SCREEN.fill(COLOR_GREEN)
+        draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
+        draw_heading2(150, 225, 200, "Congratulations", COLOR_DARK_GREEN)
+        draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_GREEN)
+        draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
+        draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
+        pygame.display.update()
+    elif status == 'score_0':
+        SCREEN.fill(COLOR_RED)
+        draw_heading1(85, 150, 200, "You Lost", COLOR_DARK_RED)
+        draw_heading2(150, 225, 200, "Better Luck Next Time", COLOR_DARK_RED)
+        draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_RED)
+        draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_RED)
+        draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_RED)
+        pygame.display.update()
+
+
 def refresh():
     global MAZE, ENTRANCE, EXIT, SOLVE_THREAD
     if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
@@ -100,24 +135,25 @@ def refresh():
         SOLVE_THREAD = None
     size = random_maze_size()
     MAZE, ENTRANCE, EXIT = generate_maze(size, size)
-    SOLVE_THREAD = threading.Thread(target=solve_maze, args=(MAZE, ENTRANCE, EXIT, draw_maze))
+    SOLVE_THREAD = threading.Thread(target=solve_maze,
+                                    args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time))
     SOLVE_THREAD.start()
 
 
 def draw_menu():
     SCREEN.fill(COLOR_WHITE)
-    draw_heading(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE * 3)
+    draw_heading1(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE * 3)
 
     # draw_button(2, 60, WIDTH - 4, HEADER - 4, 'Easy')
     # draw_button(2, 100, WIDTH - 4, HEADER - 4, 'Medium')
     # draw_button(2, 140, WIDTH - 4, HEADER - 4, 'Hard')
 
     draw_level_opener(0 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 1",
-                      ".\\ext\\images\\easy.png", "Easy")
+                      ".\\data\\images\\easy.png", "Easy")
     draw_level_opener(1 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 2",
-                      ".\\ext\\images\\medium.png", "Medium")
+                      ".\\data\\images\\medium.png", "Medium")
     draw_level_opener(2 * WIDTH / 3 + 10, HEIGHT / 2 - 75, WIDTH / 3 - 10, WIDTH / 3 + 50, "LEVEL 3",
-                      ".\\ext\\images\\hard.png", "Hard")
+                      ".\\data\\images\\hard.png", "Hard")
 
     # if len(BUTTONS) == 0:
     BUTTONS.append({
@@ -152,7 +188,7 @@ def easy():
     global r2
     global level_select
     r1 = 5
-    r2 = 10
+    r2 = 7
     level_select = "LEVEL 1 : Easy"
     refresh()
 
@@ -162,7 +198,7 @@ def medium():
     global r2
     global level_select
     r1 = 10
-    r2 = 15
+    r2 = 12
     level_select = "LEVEL 2 : Medium"
     refresh()
 
@@ -172,9 +208,38 @@ def hard():
     global r2
     global level_select
     r1 = 15
-    r2 = 20
+    r2 = 17
     level_select = "LEVEL 3 : Hard"
     refresh()
+
+
+def msec_to_time(msec):
+    print("***", msec, "***")
+    sec = msec // 1000
+    min, sec = divmod(sec, 60)
+    min_str = ''
+    sec_str = ''
+    if min == 0:
+        min_str = '00'
+    elif min > 0 and min < 10:
+        min_str = '0' + str(min)
+    else:
+        min_str = str(min)
+    if sec == 0:
+        sec_str = '00'
+    elif sec > 0 and sec < 10:
+        sec_str = '0' + str(sec)
+    else:
+        sec_str = str(sec)
+    print("                      ", min_str + ':' + sec_str, "***")
+    return min_str + ':' + sec_str
+
+
+def display_time(curr_time=0):
+    draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, "")
+    pygame.display.update()
+    draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
+    pygame.display.update()
 
 
 def draw_maze(maze, cur_pos, score):
@@ -182,18 +247,19 @@ def draw_maze(maze, cur_pos, score):
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
+    draw_button(380, 3, 20, HEADER - 4, "Replay")
     BUTTONS.clear()
     BUTTONS.append({
         'x': 2,
         'y': 2,
-        'length': 24,
+        'length': 40,
         'height': 25,
         'click': menu
     })
     BUTTONS.append({
-        'x': 30,
+        'x': 340,
         'y': 3,
-        'length': WIDTH - 150,
+        'length': 60,
         'height': HEADER - 4,
         'click': refresh
     })
@@ -214,8 +280,9 @@ def draw_maze(maze, cur_pos, score):
                 draw_rect(cell_padding + x * cell_size, HEADER + cell_padding + y * cell_size, cell_size - 1, color)
 
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
-    draw_heading(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
-    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Menu')
+    draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
+    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Time')
+    # draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3, "00:00")
     draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
 
     BUTTONS.append({
