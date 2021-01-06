@@ -1,10 +1,14 @@
 import time
+import pygame
+import threading
+from utils import stop_thread
+
 
 # from maze import AI
 
 AI = False
 SCORE = 1000
-
+TIME_THREAD = None
 
 class CellType:
     ROAD = 0
@@ -80,12 +84,28 @@ def suggest_pos_man(cells):
             if cells[3]:
                 return cells[3]
 
+def calc_time(display_time, start_time):
+    global TIME_THREAD
+    while True : 
+        curr_time = pygame.time.get_ticks() - start_time
+        display_time((curr_time//1000) * 1000)
+        time.sleep(1)
 
-def solve_maze(maze, pos, end, callback):
-    global SCORE
+
+def solve_maze(maze, pos, end, callback, end_screen, display_time):
+    global SCORE, TIME_THREAD
     time.sleep(0.1)
+    if TIME_THREAD == None :
+        start_time = pygame.time.get_ticks()
+        TIME_THREAD = threading.Thread(target=calc_time, args=(display_time,start_time))
+        TIME_THREAD.start()
+        
     if pos[0] == end[0] and pos[1] == end[1]:
         mark_walked(maze, pos)
+        end_screen("complete", SCORE)
+        stop_thread(TIME_THREAD)
+        TIME_THREAD = None
+        SCORE = 1000
         return True
     t, r, d, l = neighbors(maze, pos)
     if not AI:
@@ -98,12 +118,17 @@ def solve_maze(maze, pos, end, callback):
     if next_pos:
         if next_pos[0] == CellType.WALKED:
             mark_dead(maze, pos)
-            SCORE -= 10
-        else:
             SCORE -= 5
+        else:
+            SCORE -= 1
             mark_walked(maze, pos)
+        if SCORE <= 0:
+            end_screen('score_0', SCORE)
+            SCORE = 1000
+            
+            return True
         callback(maze, next_pos,SCORE)
-        return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback)
+        return solve_maze(maze, (next_pos[1], next_pos[2]), end, callback, end_screen, display_time)
     else:
         mark_dead(maze, pos)
         callback(maze, next_pos)
