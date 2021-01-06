@@ -167,7 +167,7 @@ def draw_end_screen(status, score):
 
 
 def refresh():
-    global MAZE, SIZE, ENTRANCE, EXIT, SOLVE_THREAD, TIME_THREAD
+    global MAZE, SIZE, ENTRANCE, EXIT, SOLVE_THREAD, TIME_THREAD, AI
     if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
         stop_thread(SOLVE_THREAD)
         SOLVE_THREAD = None
@@ -177,7 +177,12 @@ def refresh():
                                     args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time, AI))
     SOLVE_THREAD.start()
 
+    if AI : AI = False
+
     # start_time = pygame.time.get_ticks()
+    if TIME_THREAD is not None and TIME_THREAD.is_alive():
+        stop_thread(TIME_THREAD)
+        TIME_THREAD = None
     TIME_THREAD = threading.Thread(target=calc_time, args=(display_time, AI))
     TIME_THREAD.start()
 
