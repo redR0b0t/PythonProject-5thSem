@@ -39,6 +39,8 @@ COLOR_BLUE = (255, 160, 122)
 COLOR_CYAN = (0, 255, 255)
 COLOR_DARK_BLUE = pygame.Color("#3F46CB")
 COLOR_YELLOW = pygame.Color("#F1CA3A")
+COLOR_ORANGE = (255,165,0)
+COLOR_DARK_ORANGE = (118,76,0)
 
 FONT_SIZE = 16
 FONT = pygame.font.Font("data/fonts/msyh.ttf", FONT_SIZE)
@@ -58,7 +60,7 @@ level_select = ""
 image = pygame.image.load('data/images/splash.jpg')
 SCREEN.blit(image, (-79, 35))
 pygame.display.update()
-sleep(1)
+sleep(3)
 pygame.mixer.init()
 pygame.mixer.music.load('.\\data\\2.mp3')
 pygame.mixer.music.play()
@@ -124,16 +126,25 @@ def draw_end_screen(status, score):
         stop_thread(TIME_THREAD)
         TIME_THREAD = None
     if status == 'complete':
-        SCREEN.fill(COLOR_GREEN)
-        draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
-        draw_heading2(150, 225, 200, "Congratulations", COLOR_DARK_GREEN)
-        draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_GREEN)
-        draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
-        draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
-        pygame.display.update()
+        if AI :
+            SCREEN.fill(COLOR_ORANGE)
+            draw_heading1(80, 150, 200, "You Used AI", COLOR_DARK_ORANGE)
+            draw_heading2(155, 225, 200, "To Complete the Level", COLOR_DARK_ORANGE)
+            draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_ORANGE)
+            draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_ORANGE)    
+            pygame.display.update()
+
+        else :
+            SCREEN.fill(COLOR_GREEN)
+            draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
+            draw_heading2(150, 225, 200, "Congratulations", COLOR_DARK_GREEN)
+            draw_heading2(150, 300, 200, "Your Score : " + str(score), COLOR_DARK_GREEN)
+            draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
+            draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
+            pygame.display.update()
 
         # High Score update
-        f = open("high_score.txt", "r")
+        f = open("data/high_score.txt", "r")
         lines = f.read().splitlines()
         if r1 == 5 and score > int(lines[0]):
             lines[0] = str(score)
@@ -142,7 +153,7 @@ def draw_end_screen(status, score):
         if r1 == 15 and score > int(lines[2]):
             lines[2] = str(score)
         f.close()
-        f = open("high_score.txt", "w")
+        f = open("data/high_score.txt", "w")
         f.write(lines[0] + '\n' + lines[1] + '\n' + lines[2])
         f.close()
 
@@ -267,7 +278,6 @@ def display_high_score():
 
 
 def msec_to_time(msec):
-    print("***", msec, "***")
     sec = msec // 100
     min, sec = divmod(sec, 60)
     min_str = ''
@@ -284,7 +294,6 @@ def msec_to_time(msec):
         sec_str = '0' + str(sec)
     else:
         sec_str = str(sec)
-    print("                      ", min_str + ':' + sec_str, "***")
     return min_str + ':' + sec_str
 
 
@@ -379,7 +388,7 @@ def ai_toggle():
     # size = random_maze_size()
     # MAZE, ENTRANCE, EXIT = generate_maze(SIZE, SIZE)
 
-    print(MAZE)
+    # print(MAZE)
     for x in range(MAZE.__len__()):
         for y in range(MAZE.__len__()):
             if MAZE[x][y] != 1:
