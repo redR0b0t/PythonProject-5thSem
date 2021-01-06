@@ -129,12 +129,11 @@ def draw_end_screen(status, score):
         if AI :
             AI = False
             SCREEN.fill(COLOR_ORANGE)
-            draw_heading1(80, 150, 200, "You Used AI", COLOR_DARK_ORANGE)
-            draw_heading2(155, 225, 200, "To Complete the Level", COLOR_DARK_ORANGE)
-            draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_ORANGE)
-            draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_ORANGE)    
+            draw_heading1(80, 150, 200, "You Used AI", COLOR_BLACK)
+            draw_heading2(155, 225, 200, "To Complete the Level", COLOR_BLACK)
+            draw_button(25, 3, 20, 50, "Menu", COLOR_BLACK)
+            draw_button(380, 3, 20, 50, "Replay", COLOR_BLACK)    
             pygame.display.update()
-
         else :
             SCREEN.fill(COLOR_GREEN)
             draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
@@ -143,20 +142,19 @@ def draw_end_screen(status, score):
             draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
             draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
             pygame.display.update()
-
-        # High Score update
-        f = open("data/high_score.txt", "r")
-        lines = f.read().splitlines()
-        if r1 == 5 and score > int(lines[0]):
-            lines[0] = str(score)
-        if r1 == 10 and score > int(lines[1]):
-            lines[1] = str(score)
-        if r1 == 15 and score > int(lines[2]):
-            lines[2] = str(score)
-        f.close()
-        f = open("data/high_score.txt", "w")
-        f.write(lines[0] + '\n' + lines[1] + '\n' + lines[2])
-        f.close()
+            # High Score update
+            f = open("data/high_score.txt", "r")
+            lines = f.read().splitlines()
+            if r1 == 5 and score > int(lines[0]):
+                lines[0] = str(score)
+            if r1 == 10 and score > int(lines[1]):
+                lines[1] = str(score)
+            if r1 == 15 and score > int(lines[2]):
+                lines[2] = str(score)
+            f.close()
+            f = open("data/high_score.txt", "w")
+            f.write(lines[0] + '\n' + lines[1] + '\n' + lines[2])
+            f.close()
 
     elif status == 'score_0':
         SCREEN.fill(COLOR_RED)
@@ -180,7 +178,7 @@ def refresh():
     SOLVE_THREAD.start()
 
     # start_time = pygame.time.get_ticks()
-    TIME_THREAD = threading.Thread(target=calc_time, args=(display_time,))
+    TIME_THREAD = threading.Thread(target=calc_time, args=(display_time, AI))
     TIME_THREAD.start()
 
 

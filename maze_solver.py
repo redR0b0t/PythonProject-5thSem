@@ -85,14 +85,14 @@ def suggest_pos_man(cells):
                 return cells[3]
 
 
-def calc_time(display_time):
+def calc_time(display_time, ai):
     global TIME_THREAD, TIME,SCORE
     while True:
         # curr_time = pygame.time.get_ticks() - start_time
         # TIME = (curr_time // 1000) * 1000
         # # display_time(TIME)
         TIME += 100
-        SCORE-=5
+        if not ai : SCORE-=5
         display_time(TIME,SCORE)
         time.sleep(1)
 
@@ -102,7 +102,7 @@ def solve_maze(maze, pos, end, callback, end_screen, display_time, AI):
     time.sleep(0.1)
 
     if AI : SCORE = 1000
-    
+
     if pos[0] == 0 and pos[1] == 1:
         SCORE = 1000
         TIME = 0
@@ -129,9 +129,9 @@ def solve_maze(maze, pos, end, callback, end_screen, display_time, AI):
     if next_pos:
         if next_pos[0] == CellType.WALKED:
             mark_dead(maze, pos)
-            SCORE -= 10
+            if not AI : SCORE -= 10
         else:
-            SCORE -= 1
+            if not AI : SCORE -= 1
             mark_walked(maze, pos)
         
         callback(maze, next_pos, SCORE, TIME)
