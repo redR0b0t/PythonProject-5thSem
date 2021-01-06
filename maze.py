@@ -8,8 +8,10 @@ from time import sleep
 
 from maze_generator import generate_maze
 from maze_solver import solve_maze
-from maze_solver import AI
-from maze_solver import SCORE
+from maze_solver import calc_time
+
+# from maze_solver import AI
+# from maze_solver import SCORE
 from utils import stop_thread
 import random
 
@@ -46,6 +48,7 @@ FONT_LARGE2 = pygame.font.Font("data/fonts/msyh.ttf", int(FONT_SIZE * 1.5))
 BUTTONS = []
 
 SOLVE_THREAD = None
+TIME_THREAD=None
 
 r1 = r2 = 0
 level_select = ""
@@ -60,6 +63,8 @@ pygame.mixer.init()
 pygame.mixer.music.load('.\\data\\2.mp3')
 pygame.mixer.music.play()
 
+AI = False
+
 
 def draw_rect(x, y, len, color):
     pygame.draw.rect(SCREEN, color, [x, y, len, len], 0)
@@ -73,8 +78,8 @@ def draw_back_button():
 
 def draw_button(x, y, len, height, tdata, color=COLOR_DARK_BLUE):
     # pygame.draw.rect(SCREEN, COLOR_BLACK, [x, y, len, height], 1)
-    text_surface = FONT.render(text, True, color)
-    text_len = text.__len__() * FONT_SIZE
+    text_surface = FONT.render(tdata, True, color)
+    text_len = tdata.__len__() * FONT_SIZE
     SCREEN.blit(text_surface, (x + (len - text_len) / 2, y + 2))
 
 
@@ -106,10 +111,18 @@ def draw_level_opener(x, y, len, height, text1, img, text2):
 
 
 def draw_end_screen(status, score):
+    global SOLVE_THREAD,TIME_THREAD
     # print(SCORE)
     # SCORE = score
     # print(SCORE)
     # print(status, score)
+    # if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
+    #     stop_thread(SOLVE_THREAD)
+    #     SOLVE_THREAD = None
+
+    if TIME_THREAD is not None and TIME_THREAD.is_alive():
+        stop_thread(TIME_THREAD)
+        TIME_THREAD = None
     if status == 'complete':
         SCREEN.fill(COLOR_GREEN)
         draw_heading1(85, 150, 200, "You Won", COLOR_DARK_GREEN)
@@ -118,6 +131,21 @@ def draw_end_screen(status, score):
         draw_button(25, 3, 20, 50, "Menu", COLOR_DARK_GREEN)
         draw_button(380, 3, 20, 50, "Replay", COLOR_DARK_GREEN)
         pygame.display.update()
+
+        # High Score update
+        f = open("high_score.txt", "r")
+        lines = f.read().splitlines()
+        if r1 == 5 and score > int(lines[0]):
+            lines[0] = str(score)
+        if r1 == 10 and score > int(lines[1]):
+            lines[1] = str(score)
+        if r1 == 15 and score > int(lines[2]):
+            lines[2] = str(score)
+        f.close()
+        f = open("high_score.txt", "w")
+        f.write(lines[0] + '\n' + lines[1] + '\n' + lines[2])
+        f.close()
+
     elif status == 'score_0':
         SCREEN.fill(COLOR_RED)
         draw_heading1(85, 150, 200, "You Lost", COLOR_DARK_RED)
@@ -129,18 +157,30 @@ def draw_end_screen(status, score):
 
 
 def refresh():
-    global MAZE, ENTRANCE, EXIT, SOLVE_THREAD
+    global MAZE, SIZE, ENTRANCE, EXIT, SOLVE_THREAD, TIME_THREAD
     if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
         stop_thread(SOLVE_THREAD)
         SOLVE_THREAD = None
-    size = random_maze_size()
-    MAZE, ENTRANCE, EXIT = generate_maze(size, size)
+    SIZE = random_maze_size()
+    MAZE, ENTRANCE, EXIT = generate_maze(SIZE, SIZE)
     SOLVE_THREAD = threading.Thread(target=solve_maze,
-                                    args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time))
+                                    args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time, AI))
     SOLVE_THREAD.start()
+
+    # start_time = pygame.time.get_ticks()
+    TIME_THREAD = threading.Thread(target=calc_time, args=(display_time,))
+    TIME_THREAD.start()
 
 
 def draw_menu():
+    # check for high score file
+
+    f = open("high_score.txt", "r+")
+    lines = f.read().splitlines()
+    if len(lines) == 0:
+        f.write("0\n0\n0")
+    f.close()
+
     SCREEN.fill(COLOR_WHITE)
     draw_heading1(2, 2, WIDTH - 4, 'Maze', COLOR_DARK_BLUE, FONT_SIZE * 3)
 
@@ -213,9 +253,22 @@ def hard():
     refresh()
 
 
+def display_high_score():
+    global r1
+    f = open("high_score.txt", "r")
+    lines = f.read().splitlines()
+    if r1 == 5:  # Easy
+        return lines[0]
+    elif r1 == 10:  # Medium
+        return lines[1]
+    elif r1 == 15:  # Hard
+        return lines[2]
+    f.close()
+
+
 def msec_to_time(msec):
     print("***", msec, "***")
-    sec = msec // 1000
+    sec = msec // 100
     min, sec = divmod(sec, 60)
     min_str = ''
     sec_str = ''
@@ -235,18 +288,27 @@ def msec_to_time(msec):
     return min_str + ':' + sec_str
 
 
-def display_time(curr_time=0):
-    draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, "")
-    pygame.display.update()
+def display_time(curr_time,score):
+    global SCREEN
+    # draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, "       ")
+    # pygame.display.flip()
+    # draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
+    # pygame.draw.rect(SCREEN, COLOR_WHITE, [2+WIDTH//3,HEIGHT-BOTTOM , WIDTH//3, BOTTOM-4], 1)
+    SCREEN.fill(COLOR_WHITE, (2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4))
+    draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
+    draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
+    SCREEN.fill(COLOR_WHITE, (2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4))
+    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, "Time")
     draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(curr_time))
-    pygame.display.update()
+    pygame.display.flip()
 
 
-def draw_maze(maze, cur_pos, score):
+def draw_maze(maze, cur_pos, score, time):
     global level_select
     SCREEN.fill(COLOR_WHITE)
     draw_back_button()
     draw_button(30, 3, WIDTH - 150, HEADER - 4, level_select)
+    draw_button(200, 3, WIDTH - 150, HEADER - 4, "High Score : " + display_high_score())
     draw_button(380, 3, 20, HEADER - 4, "Replay")
     BUTTONS.clear()
     BUTTONS.append({
@@ -281,19 +343,50 @@ def draw_maze(maze, cur_pos, score):
 
     draw_button(2, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Score')
     draw_heading2(1, HEIGHT - BOTTOM + 20, WIDTH // 3, str(score))
-    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'Time')
-    # draw_heading2(13+WIDTH//3, HEIGHT - BOTTOM + 20, WIDTH // 3, "00:00")
+    # SCREEN.fill(COLOR_WHITE, (2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4))
+    #
+    draw_button(2 + WIDTH // 3, HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, "Time")
+    draw_heading2(13 + WIDTH // 3, HEIGHT - BOTTOM + 20, WIDTH // 3, msec_to_time(time))
     draw_button(2 + 2 * (WIDTH // 3), HEIGHT - BOTTOM, WIDTH // 3, BOTTOM - 4, 'AI')
+    if (AI):
+        draw_heading2(12 + 2 * (WIDTH // 3), HEIGHT - BOTTOM + 20, WIDTH // 3, 'ON')
+    else:
+        draw_heading2(12 + 2 * (WIDTH // 3), HEIGHT - BOTTOM + 20, WIDTH // 3, 'OFF')
 
     BUTTONS.append({
-        'x': 2,
-        'y': 60,
-        'length': WIDTH - 4,
-        'height': HEADER - 4,
-        'click': easy
+        'x': 2 + 2 * (WIDTH // 3),
+        'y': HEIGHT - BOTTOM,
+        'length': WIDTH // 3,
+        'height': BOTTOM - 4,
+        'click': ai_toggle,
+        'arg1': maze,
+        'arg2': cur_pos,
+        'arg3': score,
+        'arg4': display_time,
+
     })
 
     pygame.display.flip()
+
+
+def ai_toggle():
+    global AI, SOLVE_THREAD, SIZE
+    AI = not AI
+    # draw_maze(maze,cur_pos,score,display_time)
+    if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
+        stop_thread(SOLVE_THREAD)
+        SOLVE_THREAD = None
+    # size = random_maze_size()
+    # MAZE, ENTRANCE, EXIT = generate_maze(SIZE, SIZE)
+
+    print(MAZE)
+    for x in range(MAZE.__len__()):
+        for y in range(MAZE.__len__()):
+            if MAZE[x][y] != 1:
+                MAZE[x][y] = 0
+    SOLVE_THREAD = threading.Thread(target=solve_maze,
+                                    args=(MAZE, ENTRANCE, EXIT, draw_maze, draw_end_screen, display_time, AI))
+    SOLVE_THREAD.start()
 
 
 def dispatcher_click(pos):
@@ -301,6 +394,9 @@ def dispatcher_click(pos):
         x, y, length, height = button['x'], button['y'], button['length'], button['height']
         pos_x, pos_y = pos
         if x <= pos_x <= x + length and y <= pos_y <= y + height:
+            # if button['click'] == ai_toggle:
+            #     button['click'](button['arg1'], button['arg2'], button['arg3'], button['arg4'])
+            # else:
             button['click']()
 
 
@@ -310,7 +406,14 @@ def random_maze_size():
 
 
 def menu():
-    global SOLVE_THREAD
+    global SOLVE_THREAD, TIME_THREAD
+    if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
+        stop_thread(SOLVE_THREAD)
+        SOLVE_THREAD = None
+
+    if TIME_THREAD is not None and TIME_THREAD.is_alive():
+        stop_thread(TIME_THREAD)
+        TIME_THREAD = None
     level = 0
     draw_menu()
     while not level:
@@ -320,6 +423,10 @@ def menu():
                 if SOLVE_THREAD is not None and SOLVE_THREAD.is_alive():
                     stop_thread(SOLVE_THREAD)
                     SOLVE_THREAD = None
+
+                if TIME_THREAD is not None and TIME_THREAD.is_alive():
+                    stop_thread(TIME_THREAD)
+                    TIME_THREAD = None
                 exit(0)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
