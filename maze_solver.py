@@ -92,7 +92,7 @@ def calc_time(display_time, ai):
         # TIME = (curr_time // 1000) * 1000
         # # display_time(TIME)
         TIME += 100
-        if not ai : SCORE-=5
+        if not ai : SCORE-=22
         display_time(TIME,SCORE)
         time.sleep(1)
 
